@@ -1,4 +1,4 @@
-![Core9 Banner](public/images/Core 9 | Banner.png)
+![Core9 Banner](https://github.com/aryan-madan/Core9/blob/main/public/images/Core%209%20%7C%20Banner.png?raw=true)
 
 A web-based OS built with React and Next.js.
 
