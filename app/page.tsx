@@ -1,20 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Desktop } from "@/components/pages/desktop";
-import { Welcome } from "@/components/pages/welcome";
+import { WindowManagerProvider } from "@/components/system/window-manager";
+import { StageManager } from "@/components/system/stage-manager";
 
-export default function Home() {
-  const [onboarded, setOnboarded] = useState(false);
-
+export default function Page() {
   return (
-    <div className="fixed inset-0">
-      {!onboarded ? (
-        <Welcome onFinish={() => setOnboarded(true)} />
-      ) : (
-        <Desktop />
-      )}
-    </div>
+    <WindowManagerProvider>
+      <StageManager />
+    </WindowManagerProvider>
   );
 }
-
