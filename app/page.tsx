@@ -1,9 +1,20 @@
+"use client";
+
+import { useState } from "react";
+import { Desktop } from "@/components/pages/desktop";
 import { Welcome } from "@/components/pages/welcome";
 
-export default function Page() {
+export default function Home() {
+  const [onboarded, setOnboarded] = useState(false);
+
   return (
-    <main className="w-screen h-screen overflow-hidden">
-      <Welcome />
-    </main>
-  )
+    <div className="fixed inset-0">
+      {!onboarded ? (
+        <Welcome onFinish={() => setOnboarded(true)} />
+      ) : (
+        <Desktop />
+      )}
+    </div>
+  );
 }
+

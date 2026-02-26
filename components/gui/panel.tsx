@@ -16,7 +16,7 @@ type TransitionPanelProps = {
     variants?: { enter: Variant; center: Variant; exit: Variant };
 } & MotionProps;
 
-export function TransitionPanel({
+export function Panel({
     children,
     className,
     transition,

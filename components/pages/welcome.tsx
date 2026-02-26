@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react";
-import { TransitionPanel } from "@/components/gui/transitionpanel";
+import { Panel } from "@/components/gui/panel";
 import useMeasure from "react-use-measure";
 
 function Button({
@@ -22,7 +22,7 @@ function Button({
     );
 }
 
-export function Welcome() {
+export function Welcome({ onFinish }: { onFinish: () => void }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [direction, setDirection] = useState(1);
     const [ref, bounds] = useMeasure();
@@ -57,9 +57,9 @@ export function Welcome() {
     }, [activeIndex]);
 
     return (
-        <div className="w-full h-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-900">
+        <div className="fixed inset-0 flex items-center justify-center bg-zinc-50 dark:bg-zinc-900">
             <div className="w-[364px] overflow-hidden rounded-xl border border-zinc-950/10 bg-white dark:bg-zinc-700">
-                <TransitionPanel
+                <Panel
                     activeIndex={activeIndex}
                     variants={{
                         enter: (direction) => ({
@@ -99,7 +99,7 @@ export function Welcome() {
                             </p>
                         </div>
                     ))}
-                </TransitionPanel>
+                </Panel>
 
                 <div className="flex justify-between p-4">
                     {activeIndex > 0 ? (
@@ -112,11 +112,11 @@ export function Welcome() {
                     <Button
                         onClick={() =>
                             activeIndex === FEATURES.length - 1
-                                ? null
+                                ? onFinish()
                                 : handleSetActiveIndex(activeIndex + 1)
                         }
                     >
-                        {activeIndex === FEATURES.length - 1 ? "Close" : "Next"}
+                        {activeIndex === FEATURES.length - 1 ? "Enter" : "Next"}
                     </Button>
                 </div>
             </div>
