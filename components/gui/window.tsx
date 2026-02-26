@@ -1,47 +1,87 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { FiX } from "react-icons/fi";
+import {
+  WindowInstance,
+  useWindowManager,
+} from "@/components/system/window-manager";
 
-type WindowProps = {
-  id: string;
-  title: string;
-  icon: React.ComponentType<{ className?: string }>;
-  onClose: () => void;
-  children: React.ReactNode;
-};
+export function Window({ window: win }: { window: WindowInstance }) {
+  const { closeWindow, focusWindow, resizeWindow } = useWindowManager();
+  const [isResizing, setIsResizing] = useState(false);
 
-export function Window({
-  title,
-  icon: Icon,
-  onClose,
-  children,
-}: WindowProps) {
+  const App = win.app.component;
+  const Icon = win.app.icon;
+
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95, y: 20 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
-      className="absolute left-1/2 top-1/2 w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-zinc-800 shadow-xl"
+      drag={!isResizing}
+      dragMomentum={false}
+      onMouseDown={() => focusWindow(win.id)}
+      initial={{ scale: 0.95, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.95, opacity: 0 }}
+      transition={{ duration: 0.12 }}
+      className="absolute rounded-xl bg-zinc-900 shadow-2xl flex flex-col select-none"
+      style={{
+        width: win.width,
+        height: win.height,
+        minWidth: 360,
+        minHeight: 240,
+        left: win.x,
+        top: win.y,
+        zIndex: win.z,
+      }}
     >
-      <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-700">
+      <div className="flex items-center justify-between h-10 px-3 rounded-t-xl bg-zinc-800 shrink-0 cursor-default">
         <div className="flex items-center gap-2 text-sm text-white">
           <Icon className="h-4 w-4" />
-          <span>{title}</span>
+          {win.app.title}
         </div>
 
         <button
-          onClick={onClose}
+          onClick={() => closeWindow(win.id)}
           className="text-zinc-400 hover:text-white"
         >
-          <FiX />
+          <FiX size={16} />
         </button>
       </div>
 
-      <div className="p-4 text-white">
-        {children}
+      <div className="flex-1 p-4 overflow-hidden bg-zinc-900 rounded-b-xl">
+        <App />
       </div>
+
+      <div
+        className="absolute bottom-1 right-1 h-4 w-4 cursor-se-resize"
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          setIsResizing(true);
+
+          const startX = e.clientX;
+          const startY = e.clientY;
+          const startW = win.width;
+          const startH = win.height;
+
+          const onMove = (ev: MouseEvent) => {
+            resizeWindow(
+              win.id,
+              Math.max(360, startW + ev.clientX - startX),
+              Math.max(240, startH + ev.clientY - startY)
+            );
+          };
+
+          const onUp = () => {
+            setIsResizing(false);
+            globalThis.window.removeEventListener("mousemove", onMove);
+            globalThis.window.removeEventListener("mouseup", onUp);
+          };
+
+          globalThis.window.addEventListener("mousemove", onMove);
+          globalThis.window.addEventListener("mouseup", onUp);
+        }}
+      />
     </motion.div>
   );
 }
